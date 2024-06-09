@@ -1,26 +1,28 @@
 <template>
     <div class="control" :class="{ control__playing: isPlaying }">
-        <div class="control_btn control_btn__side" @click="handlePrev">
+        <div class="control_btn control_btn__side" :class="{ movingLeft: isMovingLeft }" @click="handlePrev"
+            @animationend="endAnimationLeft">
             <img class="prev" src="../assets/next.svg"></img>
         </div>
         <div class="control_btn" @click="handlePlay">
             <span class="play-btn" />
         </div>
-        <div class="control_btn control_btn__side" @click="handleNext">
+        <div class="control_btn control_btn__side" :class="{ movingRight: isMovingRight }" @click="handleNext"
+            @animationend="endAnimationRight">
             <img class="next" src="../assets/next.svg"></img>
         </div>
     </div>
 </template>
 
 <script setup lang="ts" name="control">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { usePlayerStore } from '../store/playerStore.ts'
 import { player } from '../utils/player'
 
 const playerStore = usePlayerStore()
-
+const isMovingRight = ref(false);
+const isMovingLeft = ref(false);
 const isPlaying = computed(() => playerStore.isPlaying)
-//const coverUrl = computed(() => playerStore.coverUrl)
 
 const handlePlay = () => {
     if (!player.isEmpty) {
@@ -34,22 +36,26 @@ const handlePlay = () => {
 
 const handlePrev = () => {
     if (isPlaying.value) {
+        isMovingLeft.value = true;
         player.prev()
     }
 }
 
 const handleNext = () => {
     if (isPlaying.value) {
+        isMovingRight.value = true;
         player.next()
     }
 }
 
-player.onReady.listen(() => {
-    playerStore.changeCover()
-})
-player.onChange.listen(() => {
-    playerStore.changeCover()
-})
+const endAnimationLeft = (): void => {
+    isMovingLeft.value = false;
+}
+
+const endAnimationRight = (): void => {
+    isMovingRight.value = false;
+}
+
 player.onPlay.listen(() => {
     playerStore.togglePlay(true)
 })
@@ -66,6 +72,12 @@ player.onPause.listen(() => {
 
 .next {
     width: 35%;
+    animation: moveAndBack 2s ease-in-out;
+}
+
+.prev {
+    width: 35%;
+    transform: scaleX(-1);
 }
 
 .control_btn:hover .next,
@@ -73,9 +85,8 @@ player.onPause.listen(() => {
     filter: brightness(0) invert(1);
 }
 
-.prev {
-    width: 35%;
-    transform: scaleX(-1);
+.next:active {
+    animation: moveAndBack 2s ease-in-out;
 }
 
 .control_btn {
@@ -88,6 +99,7 @@ player.onPause.listen(() => {
     color: #ccc;
     font-size: 16px;
     transition: background-color 0.6s ease;
+    border-radius: 10px;
 }
 
 .control_btn:hover {
@@ -155,5 +167,45 @@ player.onPause.listen(() => {
 
 .control_btn:hover .play-btn::after {
     border-color: white;
+}
+
+@keyframes moveAndBackRight {
+    0% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(4px);
+        /* 向右移动3px */
+    }
+
+    100% {
+        transform: translateX(0);
+        /* 返回原位 */
+    }
+}
+
+@keyframes moveAndBackLeft {
+    0% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(-4px);
+        /* 向右移动3px */
+    }
+
+    100% {
+        transform: translateX(0);
+        /* 返回原位 */
+    }
+}
+
+.movingRight {
+    animation: moveAndBackRight 0.4s ease-in-out;
+}
+
+.movingLeft {
+    animation: moveAndBackLeft 0.4s ease-in-out;
 }
 </style>

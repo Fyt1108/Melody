@@ -6,8 +6,9 @@ import icon from '../../resources/icon.png?asset'
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
+    icon:icon,
     width: 300,
-    height: 200,
+    height: 180,
     show: false,
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
@@ -15,8 +16,8 @@ function createWindow(): void {
     transparent: true,
     resizable: false,
     maximizable: false,
-    minimizable:false,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    minimizable: false,
+    alwaysOnTop:true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false

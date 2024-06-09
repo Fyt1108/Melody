@@ -38,7 +38,6 @@ import player from '../components/Player.vue'
     position: relative;
     z-index: 0;
     display: flex;
-    //flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 100%;
