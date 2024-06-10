@@ -2,6 +2,7 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import * as musicMetadata from 'music-metadata';
 
 function createWindow(): void {
   // Create the browser window.
@@ -23,6 +24,27 @@ function createWindow(): void {
       sandbox: false
     }
   })
+
+  ipcMain.handle('get-metadata', async (_event, filePath: string) => {
+    return getMusicMetadata(filePath);
+  });
+
+  async function getMusicMetadata(filePath: string) {
+  try {
+    const metadata = await musicMetadata.parseFile(filePath);
+    const picture = metadata.common.picture ? metadata.common.picture[0] : undefined;
+
+    // 将metadata对象转换json对象
+    const data = {
+      format:picture ? picture.format:null ,
+      pictureURL:picture ? picture.data.toString("base64"):null
+    }
+    return data;
+  } catch (error) {
+    console.error('Error parsing music file:', error);
+    return null;
+  }
+}
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()

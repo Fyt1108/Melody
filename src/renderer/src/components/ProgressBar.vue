@@ -53,7 +53,7 @@ draw()
 .progress {
     padding-left: 123px;
     padding-right: 12px;
-    height: 100%;
+    height: 53px;
     border-radius: 6px 6px 0 0;
     background-color: rgba(255, 255, 255, 0.95);
     transition: all 0.6s ease;
@@ -65,7 +65,7 @@ draw()
 
 .progress_title {
     padding-top: 6px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: bold;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -74,9 +74,9 @@ draw()
 .progress_text {
     padding-top: 2px;
     padding-left: 2px;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: bold;
-    color: #ccc;
+    color: #a7a4a4;
     transform: scale(0.6);
     transform-origin: left top;
 }

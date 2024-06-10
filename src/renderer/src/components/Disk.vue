@@ -37,6 +37,13 @@ const handleChange = async () => {
     }
     inputElement.value = '';
 }
+
+player.onReady.listen(() => {
+    store.changeCover(player.currentCover)
+})
+player.onChange.listen(() => {
+    store.changeCover(player.currentCover)
+})
 </script>
 
 

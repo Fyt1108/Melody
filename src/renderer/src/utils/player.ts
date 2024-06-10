@@ -10,6 +10,7 @@ interface PlaylistItem {
   start: number | null;
   source: AudioBufferSourceNodeOrNull;
   buffer: AudioBufferOrNull;
+  cover:any
 }
 
 // 定义处理函数的类型
@@ -60,6 +61,7 @@ class Player {
       start: null,
       source: null,
       buffer: null,
+      cover:''
     };
 
     // 初始化各种事件分发器
@@ -86,16 +88,34 @@ class Player {
   // 添加音频文件到播放列表的异步方法
   async append(file: File): Promise<void> {
     const isEmpty = this.isEmpty;
+    // 检查文件是否已经在播放列表中
+    const fileExists = this.playList.some(item => item.file !== null && item.file.path === file.path);
+    // 如果文件已存在，则不添加到播放列表中，并直接返回
+    if (fileExists) {
+    console.log('歌曲已在列表中');
+    return;
+    }
+
     this.playList.push({
       file,
       offset: 0,
       start: null,
       source: null,
       buffer: await this.readAudioBuffer(file),
+      cover:await this.getCoverUrl(file.path)
     });
     if (isEmpty) {
       this.onReady.emit(this);
     }
+  }
+  
+  async getCoverUrl(filePath:string) {
+    const metadata = await window.api.getMetadata(filePath)
+    if (metadata.pictureURL) {
+      const coverUrl = `data:${metadata.format};base64,${metadata.pictureURL.toString('base64')}`
+      return coverUrl
+    }
+    return null
   }
 
   // 播放音频的方法
@@ -167,6 +187,16 @@ class Player {
   get current(): PlaylistItem {
     return this.playList[this.playIndex] || this.emptyNode;
   }
+
+  //获取播放列表
+  get list(): PlaylistItem[]{
+    return this.playList
+  }
+
+   //获取当前播放的音乐封面
+  get currentCover(): any{
+     return this.current.cover
+   }
 
   // 获取和设置当前播放位置的计算属性
   get position(): number {
